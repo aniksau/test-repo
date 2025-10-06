@@ -47,7 +47,7 @@ automations:
           color: {{ colors.red }}
       - action: add-comment@v1
         args:
-          comment: {{ pr.author | myFilter }}
+          comment: {{ pr.author | askAI }}
 
   # Post a comment that lists the best experts for the files that were modified.
   explain_code_experts:
