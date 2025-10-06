@@ -92,6 +92,10 @@ const buildContextForGPT = context => {
 };
 
 const askAI = async (context, role, prompt, token, callback) => {
+  console.log("CONTEXT:", context);
+  console.log("ROLE:", role);
+  console.log("PROMPT:", prompt);
+  console.log("TOKEN:", token);
   const formattedContext = buildContextForGPT(context);
 
   if (!formattedContext?.length) {
