@@ -13,7 +13,7 @@ automations:
       - action: add-comment@v1
         args:
           comment: |
-            {{ source | askAI("Experienced developer", "Summarize in simple terms the changes in this PR using bullet points.", "AIzaSyDW56m1ztXzLchZ-r6r6eAKe_dfwF_-Oco") }}
+            {{ source | askAI("Experienced developer", "Summarize in simple terms the changes in this PR using bullet points.", "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") }}
 
   generate_pr_desc_on_ask_ai_label:
     on:
@@ -24,4 +24,4 @@ automations:
       - action: add-comment@v1
         args:
           comment: |
-            {{ source | askAI("qa tester", "Based on the given context, search for new functions without tests and suggest the tests to add. If all functions are covered completely, return 'no tests to suggest.'", "AIzaSyDW56m1ztXzLchZ-r6r6eAKe_dfwF_-Oco") }}
+            {{ source | askAI("qa tester", "Based on the given context, search for new functions without tests and suggest the tests to add. If all functions are covered completely, return 'no tests to suggest.'", "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") }}
