@@ -1,86 +1,27 @@
-# -*- mode: yaml -*-
-# This example configuration provides basic automations to get started with gitStream.
-# View the gitStream quickstart for more examples: https://docs.gitstream.cm/examples/
-manifest:
-  version: 1.0
-
+triggers:
+  exclude:
+    branch:
+      - r/dependabot/
 
 automations:
-
-  # Use LinearB's AI service to review the changes
-  linearb_ai_review:
+  generate_pr_desc_on_new_pr:
+    on:
+      - pr_created
     if:
       - true
     run:
-      - action: code-review@v1
-        args:
-          approve_on_LGTM: {{ calc.safe_changes }}
-
-
-  # Use LinearB's AI service to add a description to the PR
-  linearb_ai_description:
-    if:
-      - true
-    run:
-      - action: describe-changes@v1
-        args:
-          concat_mode: append
-
-  # Add a label indicating how long it will take to review the PR.
-  estimated_time_to_review:
-    if:
-      - true
-    run:
-      - action: add-label@v1
-        args:
-          label: "{{ calc.etr }} min review"
-          color: {{ colors.red if (calc.etr >= 20) else ( colors.yellow if (calc.etr >= 5) else colors.green ) }}
-
-  # Inform PR authors when they fail to reference Jira tickets in the PR title or description.
-  label_missing_jira_info:
-    if:
-      - {{ not (has.jira_ticket_in_title or has.jira_ticket_in_desc) }}
-    run:
-      - action: add-label@v1
-        args:
-          label: "missing-jira"
-          color: {{ colors.red }}
       - action: add-comment@v1
         args:
-          comment: {{ pr.author | askAI }}
+          comment: |
+            {{ source | askAI("Experienced developer", "Summarize in simple terms the changes in this PR using bullet points.", "AIzaSyDW56m1ztXzLchZ-r6r6eAKe_dfwF_-Oco") }}
 
-  # Post a comment that lists the best experts for the files that were modified.
-  explain_code_experts:
+  generate_pr_desc_on_ask_ai_label:
+    on:
+      - label_added
     if:
-      - true
+      - {{ pr.labels | match(term="/ask-ai qa") | some }}
     run:
-      - action: explain-code-experts@v1
+      - action: add-comment@v1
         args:
-          gt: 10
-
-
-# +----------------------------------------------------------------------------+
-# | Custom Expressions                                                         |
-# | https://docs.gitstream.cm/how-it-works/#custom-expressions                 |
-# +----------------------------------------------------------------------------+
-
-calc:
-  etr: {{ branch | estimatedReviewTime }}
-  safe_changes: {{ is.formatting or is.docs or is.tests or is.image }}
-
-has:
-  jira_ticket_in_title: {{ pr.title | includes(regex=r/\b[A-Za-z]+-\d+\b/) }}
-  jira_ticket_in_desc: {{ pr.description | includes(regex=r/atlassian.net\/browse\/\w{1,}-\d{3,4}/) }}
-
-colors:
-  red: 'b60205'
-  yellow: 'fbca04'
-  green: '0e8a16'
-
-is:
-  formatting: {{ source.diff.files | isFormattingChange }}
-  docs: {{ files | allDocs }}
-  tests: {{ files | allTests }}
-  image: {{ files | allImages }}
-  bot_author: {{ pr.author | match(list=['github-actions', '_bot_', '[bot]', 'dependabot']) | some }}
-  bot_branch: {{ branch.name | match(list=['renovate/']) | some }}
+          comment: |
+            {{ source | askAI("qa tester", "Based on the given context, search for new functions without tests and suggest the tests to add. If all functions are covered completely, return 'no tests to suggest.'", "AIzaSyDW56m1ztXzLchZ-r6r6eAKe_dfwF_-Oco") }}
