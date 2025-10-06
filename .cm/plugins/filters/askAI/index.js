@@ -11,7 +11,7 @@
  * */
 
 const MAX_TOKENS = 4096;
-const OPEN_AI_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const OPEN_AI_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
 const LOCK_FILES = [
   'package-lock.json',
   'yarn.lock',
