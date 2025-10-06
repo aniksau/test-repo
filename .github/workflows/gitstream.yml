@@ -39,7 +39,8 @@ jobs:
       - name: Adding PR Url
         run: |
           echo '[${{ fromJSON(fromJSON(inputs.client_payload)).repo }}#${{ fromJSON(fromJSON(inputs.client_payload)).prContext.number }}](${{ fromJSON(fromJSON(inputs.client_payload)).prContext.url }}) - `${{ fromJSON(fromJSON(inputs.client_payload)).branch }}` by ${{ fromJSON(fromJSON(inputs.client_payload)).prContext.author }}' >> $GITHUB_STEP_SUMMARY
-
+        env:
+          OPEN_AI_TOKEN: ${{ secrets.OPEN_AI_TOKEN }}
       - name: Evaluate Rules
         uses: linear-b/gitstream-github-action@v2
         id: rules-engine
@@ -51,3 +52,5 @@ jobs:
           installation_id: ${{ github.event.inputs.installation_id }}
           resolver_url: ${{ github.event.inputs.resolver_url }}
           resolver_token: ${{ github.event.inputs.resolver_token }}
+        env:
+          OPEN_AI_TOKEN: ${{ secrets.OPEN_AI_TOKEN }}
